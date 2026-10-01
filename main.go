@@ -82,7 +82,7 @@ func (s *server) routes() http.Handler {
 		"/x":   "https://twitter.com/rishav__nandi",
 		"/ln":  "https://www.linkedin.com/in/rishavnandi/",
 		"/gh":  "https://github.com/rishavnandi",
-		"/git": "https://github.com/rishavnandi/rishavnandi.com",
+		"/git": "https://github.com/rishavnandi/rishavnandi_go",
 	} {
 		mux.Handle("GET "+path, http.RedirectHandler(to, http.StatusFound))
 	}
