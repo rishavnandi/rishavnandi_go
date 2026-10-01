@@ -45,6 +45,7 @@
     {{/* Only the search pages need htmx. Everything else ships zero JS. */}}
     <script src="/htmx.min.js" defer></script>
     {{end}}
+    {{template "vercel" .}}
   </body>
 </html>
 {{end}}
@@ -61,6 +62,15 @@
     </button>
   </div>
 </nav>{{end}}
+
+{{/* Vercel Analytics + Speed Insights. Both scripts are served from the Vercel
+     edge rather than bundled, so they cost two deferred tags and nothing in the
+     build. Gated on the build-time VERCEL env var: pages are prerendered bytes,
+     so a per-request host check is not available. */}}
+{{define "vercel"}}{{if .OnVercel}}
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+    {{end}}{{end}}
 
 {{define "theme"}}<script>
 // Runs before first paint. Inlined because a blocking theme flash is worse than

@@ -226,8 +226,13 @@ func TestPostLoading(t *testing.T) {
 	if posts[0].Category != "Tutorial" || len(posts[0].Tags) != 3 {
 		t.Errorf("frontmatter not parsed: %+v", posts[0])
 	}
-	if !strings.Contains(string(posts[0].HTML), "<pre>") {
+	html := string(posts[0].HTML)
+	if !strings.Contains(html, "<pre") {
 		t.Error("markdown code blocks should render")
+	}
+	// Highlighting happens at build time via chroma; pages must stay JS-free.
+	if !strings.Contains(html, `class="tok-`) {
+		t.Error("fenced code should carry chroma tok-* classes")
 	}
 }
 

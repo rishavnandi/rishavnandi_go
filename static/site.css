@@ -511,6 +511,105 @@ html.dark .more:hover {
   text-wrap: pretty;
 }
 
+/* ---------- syntax highlighting ---------- */
+
+/* Chroma emits tok-* classes at build time, so code highlighting costs no
+   JavaScript. These are the full set of token classes it can emit, themed
+   against the same neutral palette as the rest of the site. */
+:root {
+  --tok-kw: #7c3aed;
+  --tok-str: #047857;
+  --tok-num: #b45309;
+  --tok-com: #a3a3a3;
+  --tok-fn: #2563eb;
+  --tok-lit: #b45309;
+  --tok-op: #525252;
+  --tok-err: #b91c1c;
+}
+
+html.dark {
+  --tok-kw: #c4b5fd;
+  --tok-str: #6ee7b7;
+  --tok-num: #fcd34d;
+  --tok-com: #737373;
+  --tok-fn: #93c5fd;
+  --tok-lit: #fcd34d;
+  --tok-op: #a3a3a3;
+  --tok-err: #fca5a5;
+}
+
+.tok-k,
+.tok-kc,
+.tok-kd,
+.tok-kn,
+.tok-kp,
+.tok-kr {
+  color: var(--tok-kw);
+}
+
+.tok-s,
+.tok-s1,
+.tok-s2,
+.tok-sa,
+.tok-sc,
+.tok-dl {
+  color: var(--tok-str);
+}
+
+.tok-m,
+.tok-mb,
+.tok-mf,
+.tok-mh,
+.tok-mi,
+.tok-mo,
+.tok-n,
+.tok-nb,
+.tok-nf,
+.tok-ni,
+.tok-nl,
+.tok-nx,
+.tok-py,
+.tok-vn {
+  color: var(--tok-num);
+}
+
+.tok-c,
+.tok-c1,
+.tok-cf,
+.tok-cm {
+  color: var(--tok-com);
+  font-style: italic;
+}
+
+.tok-nt {
+  color: var(--tok-lit);
+}
+
+.tok-p,
+.tok-pi,
+.tok-o {
+  color: var(--tok-op);
+}
+
+.tok-nv,
+.tok-kt {
+  color: var(--tok-fn);
+}
+
+.tok-err {
+  color: var(--tok-err);
+}
+
+.tok-line,
+.tok-cl {
+  display: inline;
+}
+
+.tok-lineno,
+.tok-hl {
+  display: none;
+}
+
 /* ---------- post list rows ---------- */
 
 /* Title and description are one text block, so the gap lives on the block

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	texttemplate "text/template"
@@ -50,6 +51,11 @@ type pageData struct {
 	Page, TotalPages int
 	Total            int // matching items, before paging
 	PrevURL, NextURL string
+
+	// OnVercel is true when VERCEL is set, which Vercel does for every build.
+	// Gates the Analytics / Speed Insights script tags. Pages are prerendered
+	// bytes, so this cannot be a per-request host check.
+	OnVercel bool
 }
 
 func newPage(title, description, canonical, ogType, ogImage string) pageData {
@@ -58,7 +64,7 @@ func newPage(title, description, canonical, ogType, ogImage string) pageData {
 		Title: title, Description: description,
 		Canonical: canonical, OGType: ogType, OGImage: ogImage, OGImageAlt: siteName,
 		Experiences: experiences, Projects: featuredProjects, Posts: posts,
-		Year: time.Now().Year(),
+		Year: time.Now().Year(), OnVercel: os.Getenv("VERCEL") != "",
 	}
 }
 

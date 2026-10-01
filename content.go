@@ -9,7 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
 )
 
@@ -34,7 +36,19 @@ func loadPosts() {
 	}
 	// Reset: build() calls this, and tests call it again.
 	posts = nil
-	md := goldmark.New(goldmark.WithExtensions(extension.GFM))
+	md := goldmark.New(goldmark.WithExtensions(
+		extension.GFM,
+		// Highlighting runs at build time via chroma, so it costs no JavaScript
+		// on the page. Class mode emits tok-* spans that site.css themes for
+		// light and dark; see the .tok-* rules there.
+		highlighting.NewHighlighting(
+			highlighting.WithFormatOptions(
+				html.WithClasses(true),
+				html.ClassPrefix("tok-"),
+				html.WithLineNumbers(false),
+			),
+		),
+	))
 
 	for _, f := range files {
 		raw, err := contentFS.ReadFile("content/" + f.Name())

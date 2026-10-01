@@ -87,10 +87,13 @@ automatic one.
 
 Dropped from the original, per the migration decision:
 
-- **shiki** syntax highlighting — code blocks are styled `<pre><code>`. A
-  JavaScript highlighter contradicts the goal.
 - **per-post OG images** (`/api/og/{slug}`) — `og:image` points at the static
   social image instead.
+
+Syntax highlighting is back, but done in Go: goldmark renders fenced blocks
+through [chroma](https://github.com/alecthomas/chroma) at build time and emits
+`tok-*` classes that `site.css` themes for light and dark. Still zero JavaScript
+on post pages, and it costs about 110 bytes gzip per post.
 
 `llms.txt`, `robots.txt` and `sitemap.xml` are generated at startup from the
 loaded posts, so adding a post can't leave them stale.
@@ -100,6 +103,11 @@ loaded posts, so adding a post can't leave them stale.
 Set `PORT` and run the binary. `vercel.json` sets the `go` framework preset;
 Vercel's Go runtime is Beta. Fly.io, Render, Railway, Coolify or any VPS run the
 same binary unchanged.
+
+On Vercel, `VERCEL` is set at build time, which adds the Analytics and Speed
+Insights script tags. Both are served from the edge rather than bundled, so they
+cost two deferred tags and nothing in the build. They are omitted from local
+builds and from other hosts.
 
 ## Content
 
