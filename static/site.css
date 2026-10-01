@@ -601,10 +601,17 @@ html.dark {
   color: var(--tok-fn);
 }
 
+/* Literals: bare scalars and untagged text (yaml keys, ini values). */
+.tok-l,
+.tok-w {
+  color: var(--tok-plain);
+}
+
 .tok-err {
   color: var(--tok-err);
 }
 
+/* Line wrappers carry no colour of their own. */
 .tok-line,
 .tok-cl {
   display: inline;
