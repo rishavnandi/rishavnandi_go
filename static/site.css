@@ -519,6 +519,7 @@ html.dark .more:hover {
 :root {
   /* Fallback for tokens chroma emits no class for (plain shell commands). */
   --tok-plain: #171717;
+  --tok-arg: #404040;
   --code-bg-block: #ececec;
   --tok-kw: #7c3aed;
   --tok-str: #047857;
@@ -532,6 +533,7 @@ html.dark .more:hover {
 
 html.dark {
   --tok-plain: #e5e5e5;
+  --tok-arg: #d4d4d4;
   --code-bg-block: #0f0f0f;
   --tok-kw: #c4b5fd;
   --tok-str: #6ee7b7;
@@ -568,7 +570,6 @@ html.dark {
 .tok-mi,
 .tok-mo,
 .tok-n,
-.tok-nb,
 .tok-nf,
 .tok-ni,
 .tok-nl,
@@ -590,6 +591,28 @@ html.dark {
   color: var(--tok-lit);
 }
 
+/* Builtins: the command in command position, e.g. the sudo in `sudo apt`, and
+   true/false. chroma emits these as tok-nb, not tok-b. */
+.tok-b,
+.tok-bb,
+.tok-nb {
+  color: var(--tok-kw);
+  font-weight: 600;
+}
+
+/* Section headers, e.g. `[homeserver:vars]` in an ansible inventory. */
+.tok-nn {
+  color: var(--tok-kw);
+  font-weight: 600;
+}
+
+/* Arguments, plain words and interpolated strings. Distinct from the plain
+   foreground so nothing in a block reads as body text. */
+.tok-no,
+.tok-sx {
+  color: var(--tok-arg);
+}
+
 .tok-p,
 .tok-pi,
 .tok-o {
@@ -601,8 +624,13 @@ html.dark {
   color: var(--tok-fn);
 }
 
-/* Literals: bare scalars and untagged text (yaml keys, ini values). */
-.tok-l,
+/* Bare scalars. chroma's yaml lexer returns one Literal for a whole
+   `key = value` line, so these carry their own colour rather than the plain
+   foreground, which is the same colour as prose. */
+.tok-l {
+  color: var(--tok-arg);
+}
+
 .tok-w {
   color: var(--tok-plain);
 }

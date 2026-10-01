@@ -1,6 +1,9 @@
 package main
 
 import (
+	"github.com/alecthomas/chroma/v2"
+	"github.com/alecthomas/chroma/v2/lexers"
+
 	"bytes"
 	"context"
 	"fmt"
@@ -233,6 +236,30 @@ func TestPostLoading(t *testing.T) {
 	// Highlighting happens at build time via chroma; pages must stay JS-free.
 	if !strings.Contains(html, `class="tok-`) {
 		t.Error("fenced code should carry chroma tok-* classes")
+	}
+}
+
+// chroma's stock shell lexer emits Text for `sudo apt update`, which left shell
+// blocks uncoloured. This covers the override and the fact that a RegexLexer
+// emits an Error token for anything no rule matches -- those render red.
+func TestShellHighlighting(t *testing.T) {
+	it, err := lexers.Get("bash").Tokenise(nil, "sudo apt update -y # note\n")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[chroma.TokenType]bool{}
+	for _, tok := range it.Tokens() {
+		got[tok.Type] = true
+	}
+	for _, want := range []chroma.TokenType{
+		chroma.NameBuiltin, chroma.NameOther, chroma.NameTag, chroma.CommentSingle,
+	} {
+		if !got[want] {
+			t.Errorf("expected %s token in shell line", want)
+		}
+	}
+	if got[chroma.Error] {
+		t.Error("unmatched shell input must not produce Error tokens")
 	}
 }
 
