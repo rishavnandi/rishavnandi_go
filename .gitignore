@@ -1,6 +1,7 @@
 # Compiled binary
 /rishavnandi_go
 
-# Local env
+# Local env / Vercel CLI state
 .env
-.env.*
+.env*
+.vercel
