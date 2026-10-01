@@ -1,123 +1,46 @@
-# rishavnandi.com — Go + htmx
+# rishavnandi.com
 
-Rewrite of [rishavnandi.com](https://www.rishavnandi.com) (formerly SvelteKit +
-Tailwind) as a single Go binary. Same routes, same content, same look.
+Source for [rishavnandi.com](https://www.rishavnandi.com). Go and htmx 4,
+deployed on Vercel.
 
 ```bash
 go run .            # http://localhost:8080
 go test ./...
 ```
 
-## Why it's fast
+## How it works
 
-Every route except the two search pages is rendered **once at startup** into a
-`map[string][]byte`. Serving is a map lookup and a `Write` — no template
-execution, no markdown parsing, no allocation churn on the hot path.
+Every route except `/projects` and `/posts` is rendered once at startup into a
+`map[string][]byte`, so serving is a map lookup and a write. Those two render per
+request so htmx can search them, and both work without JavaScript too.
 
-| | ns/op | allocs/op |
-|---|---|---|
-| `/` | ~10,000 | 23 |
-| `/post/homelab` | ~5,000 | 28 |
-| htmx fragment | ~59,000 | 523 |
+htmx loads only on those two pages. The homepage and post pages ship no
+JavaScript at all, and code highlighting is chroma at build time, so that stays
+true for posts.
 
-`/` and post pages ship **zero JavaScript**. htmx (37KB) loads only on
-`/projects` and `/posts`, and only there does it do anything.
-
-Payload per visit, and throughput against the previous SvelteKit build served
-behind an equivalent static server (50 concurrent, keep-alive, M1 Pro):
-
-| | old | new |
-|---|---|---|
-| `/` homepage | 145 KB / 24.6 KB gzip | 66 KB / 13.1 KB gzip |
-| `/posts` | 305 KB / 94.2 KB gzip | 69 KB / 22.1 KB gzip |
-| JS files on `/` | 1 (41 KB CSS) | 0 |
-| rps, `/` | 28,441 | 49,602 (1.74x) |
-| RSS at rest | — | ~28 MB |
-
-`/posts` is the one page slower than a static file (0.44x), because it renders
-per request so htmx can query it. At ~16k rps that is not a practical concern.
+`/projects` fetches repos from the GitHub API on demand, cached five minutes, with
+`s-maxage=300` so a CDN absorbs the calls. New public repos appear on their own.
+The homepage "Projects" section is a separate hand-curated list in `site.go`.
 
 ## Layout
 
 ```
 main.go       routing, static files, GitHub fetching, list filtering
 render.go     template setup, prerender pass, pagination
-content.go    markdown posts: frontmatter parse + goldmark render
+content.go    markdown posts: frontmatter, highlighting
 site.go       hand-written content: experience, projects, socials
-icons.go      inlined SVGs (Lucide strokes + brand fills)
-templates/    layout.gohtml holds the document; one file per route
+icons.go      inlined SVGs
+templates/    one file per route; layout.gohtml holds the document
 static/       site.css, htmx.min.js, images
-content/      the posts, verbatim from the Svelte version
+content/      posts
 ```
 
-Templates use one `pageData` struct rather than a type per page, and each route
-parses into a clone of `base` so pages can each define `"content"`.
+## Adding a post
 
-## htmx 4 notes
-
-htmx 4 dropped implicit attribute inheritance, so `hx-target` and `hx-swap` are
-declared on the elements that actually swap. Search hits `/projects?q=...` and
-swaps `outerHTML` of `#results`, which is why the fragment includes the wrapper
-itself.
-
-Both list routes also work with JavaScript disabled: a plain `GET` with `?q=`
-returns the full page. The count lives inside `#results` so it updates with the
-results.
-
-## GitHub repos
-
-`/projects` fetches from the GitHub API on demand and caches the result for five
-minutes, so a new public repo shows up on its own without a redeploy.
-
-Fetched lazily rather than from a background ticker: a ticker needs a
-long-lived process and silently returns nothing on serverless hosts, where the
-process is frozen between requests. Lazy fetch works everywhere. The response
-carries `s-maxage=300` so a CDN absorbs the calls, which keeps a serverless cold
-start from burning the 60 unauthenticated GitHub requests/hour. On failure the
-last good list is kept, so a GitHub outage never blanks the page.
-
-Unauthenticated requests are capped at 60/hour per IP. `GITHUB_TOKEN` is not
-wired up; add it if the TTL ever needs to drop.
-
-The homepage "Projects" section is a separate, hand-curated list in `site.go` and
-does **not** auto-populate. That matches the original: `/projects` is the
-automatic one.
-
-## Deliberate omissions
-
-Dropped from the original, per the migration decision:
-
-- **per-post OG images** (`/api/og/{slug}`) — `og:image` points at the static
-  social image instead.
-
-Syntax highlighting is back, but done in Go: goldmark renders fenced blocks
-through [chroma](https://github.com/alecthomas/chroma) at build time and emits
-`tok-*` classes that `site.css` themes for light and dark. Still zero JavaScript
-on post pages, and it costs about 110 bytes gzip per post.
-
-`llms.txt`, `robots.txt` and `sitemap.xml` are generated at startup from the
-loaded posts, so adding a post can't leave them stale.
-
-## Deploying
-
-Set `PORT` and run the binary. `vercel.json` sets the `go` framework preset;
-Vercel's Go runtime is Beta. Fly.io, Render, Railway, Coolify or any VPS run the
-same binary unchanged.
-
-On Vercel, `VERCEL` is set at build time, which adds the Analytics and Speed
-Insights script tags. Both are served from the edge rather than bundled, so they
-cost two deferred tags and nothing in the build. They are omitted from local
-builds and from other hosts.
-
-## Content
-
-Posts live in `content/*.md` with YAML frontmatter (`published: false` hides a
-post). Add a file, restart. Note the original files have CRLF endings; the parser
-normalises them.
+Drop a `.md` file in `content/` with YAML frontmatter (`published: false` hides
+it) and redeploy.
 
 ## Credits
 
-- [htmx](https://htmx.org) 4.0.0, bundled in `static/` — BSD 3-Clause
-- [goldmark](https://github.com/yuin/goldmark) for markdown — MIT
-- Icon paths from [Lucide](https://lucide.dev) (ISC) and brand marks from the
-  previous Svelte components
+[htmx](https://htmx.org) (BSD-3-Clause), [goldmark](https://github.com/yuin/goldmark)
+and [chroma](https://github.com/alecthomas/chroma) (MIT), [Lucide](https://lucide.dev) icons (ISC).

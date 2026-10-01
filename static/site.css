@@ -517,6 +517,9 @@ html.dark .more:hover {
    JavaScript. These are the full set of token classes it can emit, themed
    against the same neutral palette as the rest of the site. */
 :root {
+  /* Fallback for tokens chroma emits no class for (plain shell commands). */
+  --tok-plain: #171717;
+  --code-bg-block: #ececec;
   --tok-kw: #7c3aed;
   --tok-str: #047857;
   --tok-num: #b45309;
@@ -528,6 +531,8 @@ html.dark .more:hover {
 }
 
 html.dark {
+  --tok-plain: #e5e5e5;
+  --code-bg-block: #0f0f0f;
   --tok-kw: #c4b5fd;
   --tok-str: #6ee7b7;
   --tok-num: #fcd34d;
@@ -1241,10 +1246,13 @@ html.dark .prose-neutral {
   padding: 0.857143em 1.14286em;
   border-width: 1px;
   border-radius: 0.25rem;
-  background: var(--elev);
+  /* Distinct from the page background so a code block reads as a code block
+     even when nothing inside it is tokenised. */
+  background: var(--code-bg-block);
   font-size: 0.875em;
   line-height: 1.71429;
   overflow-x: auto;
+  tab-size: 2;
 }
 
 .prose-neutral pre code {
@@ -1254,7 +1262,10 @@ html.dark .prose-neutral {
   font-weight: inherit;
   font-size: inherit;
   line-height: inherit;
-  color: inherit;
+  /* Explicit, not inherited. Chroma emits no token for plain shell commands
+     like `sudo apt update`, and inheriting the prose colour made those lines
+     indistinguishable from body text. */
+  color: var(--tok-plain);
 }
 
 .prose-neutral table {
