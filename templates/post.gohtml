@@ -1,0 +1,31 @@
+{{define "content"}}
+{{with .Post}}
+<main class="stack-sm post">
+  <div class="post-head">
+    <h1>{{.Title}}</h1>
+    <p class="dim-strong">{{.Description}}</p>
+  </div>
+
+  <div class="post-meta">
+    <div class="row-tight wrap">
+      <span class="badge">{{iconAt "tag" 12}}<span>{{.Category}}</span></span>
+      <span class="badge">{{iconAt "cal" 12}}<time datetime="{{.Date}}" title="Published">{{formatDate .Date}}</time></span>
+      {{if .Updated}}<span class="badge">{{iconAt "clock" 12}}<time datetime="{{.Updated}}" title="Last updated">{{formatDate .Updated}}</time></span>{{end}}
+    </div>
+    <a href="https://github.com/rishavnandi/rishavnandi.com/blob/main/src/posts/{{.Slug}}.md"
+      class="btn btn-outline btn-sm edit-btn" target="_blank" rel="noopener noreferrer">
+      <span>Edit on GitHub</span>{{iconAt "arrow-up-right" 12}}
+    </a>
+  </div>
+
+  {{if .Writing}}
+  <div class="wip">
+    {{iconAt "alert" 16}}
+    <p>This post is a work in progress. It may be incomplete, contain errors, or be subject to breaking changes.</p>
+  </div>
+  {{end}}
+
+  <article class="prose prose-neutral">{{.HTML}}</article>
+</main>
+{{end}}
+{{end}}

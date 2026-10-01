@@ -1,0 +1,84 @@
+{{define "content"}}
+<main class="stack">
+  {{template "about" .}}
+  {{template "featured-projects" .}}
+  {{template "experience" .}}
+  {{template "recent-posts" .}}
+</main>
+{{end}}
+
+{{define "about"}}
+<section>
+  <article class="prose">
+    <h1 class="name">Rishav Nandi</h1>
+    <p class="lead">I'm an AI Platform Engineer &amp; DevOps practitioner from India, focused on automation, AI infrastructure, and open-source software.</p>
+  </article>
+</section>
+{{end}}
+
+{{define "featured-projects"}}
+<section class="stack-sm">
+  <div class="section-head">
+    <h2>Projects</h2>
+    <a href="/projects" class="more">{{iconAt "arrow-right" 14}}<span>All projects</span></a>
+  </div>
+  <div class="grid-2">
+    {{range .Projects}}{{template "project-card" .}}{{end}}
+  </div>
+</section>
+{{end}}
+
+{{define "project-card"}}
+<div class="card project">
+  <div class="project-body">
+    <div class="row between">
+      <div class="row-tight">
+        {{/* Custom logo wins; otherwise fall back to the first tag's icon. */}}
+        {{with .Icon}}<img src="{{.}}" alt="" width="24" height="24" class="icon-img" decoding="async" />
+        {{else}}{{iconAt (techIcon .LeadTag) 24}}{{end}}
+        {{if .URL}}<a href="{{.URL}}" target="_blank" rel="noopener" class="title-link">{{.Title}}{{iconAt "arrow-up-right" 13}}</a>
+        {{else}}<p class="title-plain">{{.Title}}</p>{{end}}
+      </div>
+      <div class="row-tight">
+        {{if .Badge}}<div class="badge-spot">{{.Badge}}</div>{{end}}
+        <a href="{{.GitHubURL}}" title="View {{.Title}} repository on GitHub" target="_blank" rel="noopener" class="dim">{{iconAt "github" 16}}</a>
+      </div>
+    </div>
+    <p class="desc">{{.Description}}</p>
+    <div class="tags">
+      {{range .Tags}}<span class="badge">{{iconAt (techIcon .) 14}}<span>{{.}}</span></span>{{end}}
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{define "experience"}}
+<section class="stack-sm">
+  <div class="section-head"><h2>Experience</h2></div>
+  <ol class="timeline">
+    {{range .Experiences}}
+    <li class="entry">
+      {{/* Decorative: the date directly below carries the meaning. */}}
+      <span class="dot" aria-hidden="true"></span>
+      <time class="mono dim-strong">{{.Start}} - {{.End}}</time>
+      <div class="entry-body">
+        <h3>{{.Role}}</h3>
+        <a href="{{.CompanyURL}}" target="_blank" rel="noopener" class="company"><span>{{.Company}}</span>{{iconAt "arrow-up-right" 12}}</a>
+      </div>
+      <p class="desc">{{.About}}</p>
+    </li>
+    {{end}}
+  </ol>
+</section>
+{{end}}
+
+{{define "recent-posts"}}
+{{$limited := .Posts}}{{if gt (len .Posts) 3}}{{$limited = slice .Posts 0 3}}{{end}}
+<section class="stack-sm">
+  <div class="section-head">
+    <h2>Posts</h2>
+    <a href="/posts" class="more">{{iconAt "arrow-right" 14}}<span>All posts</span></a>
+  </div>
+  {{range $limited}}{{template "post-card" .}}{{end}}
+</section>
+{{end}}

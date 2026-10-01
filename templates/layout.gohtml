@@ -1,0 +1,144 @@
+{{define "layout"}}<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="author" content="{{.SiteName}}" />
+    <meta http-equiv="x-dns-prefetch-control" content="on" />
+    <link rel="dns-prefetch" href="//github.com" />
+    <link rel="dns-prefetch" href="//linkedin.com" />
+    <link rel="dns-prefetch" href="//twitter.com" />
+    <link rel="icon" type="image/png" href="/images/logo_png.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@rishav__nandi" />
+    <link rel="stylesheet" href="/site.css" />
+    <title>{{.Title}}</title>
+    <link rel="canonical" href="{{.Canonical}}" />
+    <meta name="description" content="{{.Description}}" />
+    <meta property="og:type" content="{{.OGType}}" />
+    <meta property="og:site_name" content="{{.SiteName}}" />
+    <meta property="og:title" content="{{.Title}}" />
+    <meta property="og:description" content="{{.Description}}" />
+    <meta property="og:url" content="{{.Canonical}}" />
+    <meta property="og:image" content="{{.OGImage}}" />
+    <meta property="og:image:alt" content="{{.OGImageAlt}}" />
+    <meta name="twitter:title" content="{{.Title}}" />
+    <meta name="twitter:description" content="{{.Description}}" />
+    <meta name="twitter:image" content="{{.OGImage}}" />
+    <meta name="twitter:image:alt" content="{{.OGImageAlt}}" />
+    {{template "jsonld" .}}
+    {{template "theme" .}}
+  </head>
+  <body>
+    <div class="shell">
+      {{template "header" .}}
+      <div class="container main">{{template "content" .}}</div>
+      <footer class="container footer">
+        <p class="serif">Cosplaying as a sysadmin</p>
+        <div class="footer-id">
+          <h2>{{.SiteName}}</h2><span class="muted">-</span><p>{{.Year}}</p>
+        </div>
+      </footer>
+    </div>
+    {{if .SearchLabel}}
+    {{/* Only the search pages need htmx. Everything else ships zero JS. */}}
+    <script src="/htmx.min.js" defer></script>
+    {{end}}
+  </body>
+</html>
+{{end}}
+
+{{define "header"}}<nav class="container nav">
+  <a href="/" class="brand">Rishav Nandi</a>
+  <div class="nav-links">
+    {{range socials}}<a href="{{.URL}}" title="{{.Name}}" target="_blank" rel="noopener noreferrer" class="btn btn-icon" aria-label="{{.Name}}">{{iconAt .Icon 18}}</a>
+    {{end}}
+    <button data-theme-toggle title="Change theme" class="btn btn-icon theme-toggle" aria-label="Toggle theme">
+      <span class="theme-sun">{{iconAt "sun" 20}}</span>
+      <span class="theme-moon">{{iconAt "moon" 20}}</span>
+      <span class="sr-only">Toggle theme</span>
+    </button>
+  </div>
+</nav>{{end}}
+
+{{define "theme"}}<script>
+// Runs before first paint. Inlined because a blocking theme flash is worse than
+// a blocking script.
+(() => {
+  const key = 'mode-watcher-mode';
+  const system = matchMedia('(prefers-color-scheme: dark)');
+  let preference = 'system';
+  try {
+    preference = localStorage.getItem(key) || 'system';
+  } catch {
+    // Theme switching still works when storage is disabled.
+  }
+  const apply = () => {
+    const dark = preference === 'dark' || (preference !== 'light' && system.matches);
+    document.documentElement.classList.toggle('dark', dark);
+    document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+  };
+  apply();
+  system.addEventListener('change', apply);
+  window.addEventListener('storage', (event) => {
+    if (event.key === key || event.key === null) {
+      preference = event.newValue || 'system';
+      apply();
+    }
+  });
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element) || !event.target.closest('[data-theme-toggle]')) return;
+    preference = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+    apply();
+    try {
+      localStorage.setItem(key, preference);
+    } catch {
+      // Keep the selected theme for this page even without persistent storage.
+    }
+  });
+})();
+</script>{{end}}
+
+{{define "jsonld"}}{{if eq .OGType "profile"}}<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://www.rishavnandi.com/#website",
+      "url": "https://www.rishavnandi.com/",
+      "name": "Rishav Nandi",
+      "alternateName": ["Rishav", "rishavnandi"]
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": "https://www.rishavnandi.com/#profile",
+      "url": "https://www.rishavnandi.com/",
+      "name": "Rishav Nandi | Gen AI Platform Engineer & DevOps",
+      "mainEntity": { "@id": "https://www.rishavnandi.com/#person" }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://www.rishavnandi.com/#person",
+      "name": "Rishav Nandi",
+      "alternateName": ["Rishav", "rishavnandi"],
+      "url": "https://www.rishavnandi.com/",
+      "description": "Gen AI Platform Engineer and DevOps practitioner building AI infrastructure, automation, and self-hosted systems.",
+      "jobTitle": "Gen AI Platform Engineer",
+      "worksFor": { "@type": "Organization", "name": "Tata Consultancy Services" },
+      "sameAs": [
+        "https://github.com/rishavnandi",
+        "https://www.linkedin.com/in/rishavnandi/",
+        "https://twitter.com/rishav__nandi",
+        "https://dev.to/rishavnandi"
+      ],
+      "knowsAbout": [
+        "Generative AI", "AI Platform Engineering", "DevOps", "Automation",
+        "AI Infrastructure", "LLM Fine-Tuning", "RAG", "MCP", "Docker",
+        "Kubernetes", "Terraform", "Ansible", "GitOps", "SRE"
+      ]
+    }
+  ]
+}
+</script>{{end}}{{end}}

@@ -1,0 +1,6 @@
+# Compiled binary
+/rishavnandi_go
+
+# Local env
+.env
+.env.*

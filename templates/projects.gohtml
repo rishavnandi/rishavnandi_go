@@ -1,0 +1,37 @@
+{{define "content"}}
+<main>
+  {{template "search" .}}
+  {{template "results" .}}
+</main>
+{{end}}
+
+{{define "results"}}
+{{/* The count sits inside the swap target so it updates with the results. */}}
+  <div id="results">
+  <div class="row between dim-strong mb-4">
+    <div class="row-tight">{{iconAt "fork" 14}}<p class="mono xs">{{.Total}} repositories</p></div>
+    <a href="https://github.com/rishavnandi?tab=repositories" target="_blank" rel="noopener" class="group repo-cta">
+      <span class="mono xs">View on GitHub</span>{{iconAt "arrow-up-right" 14}}
+    </a>
+  </div>
+  <div class="stack-sm">
+    {{range .Repos}}
+    <div class="card">
+      <div class="row between">
+        <a href="{{.HTMLURL}}" target="_blank" rel="noopener" class="repo-name group">
+          <span>{{.Name}}</span>{{iconAt "arrow-up-right" 12}}
+        </a>
+        <span class="row-tight dim-strong stars">{{iconAt "star" 14}}<p class="mono xs">{{.Stars}}</p></span>
+      </div>
+      <p class="desc">{{.Description}}</p>
+      <div class="tags scroll-x">
+        {{range .Topics}}<span class="badge"><span>{{.}}</span></span>{{end}}
+      </div>
+    </div>
+    {{else}}
+    <p class="desc dim-strong" role="status">No repositories match your search.</p>
+    {{end}}
+  </div>
+  {{template "pager" .}}
+</div>
+{{end}}

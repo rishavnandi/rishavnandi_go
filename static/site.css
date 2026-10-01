@@ -1,0 +1,1238 @@
+/* Hand-rolled replacement for the Tailwind utility soup. Same tokens, same look. */
+
+:root {
+  --bg: #f5f5f5;
+  --fg: #171717;
+  --fg-strong: #111827;
+  --muted: #525252;
+  --faint: #737373;
+  --border: #d4d4d4;
+  --border-soft: #e5e5e5;
+  --chip: #e5e5e580;
+  --card: #f5f5f5;
+  --elev: #fff;
+  --hover: #e5e5e5;
+  --spot: linear-gradient(110deg, #f5f5f5 45%, #d4d4d4 55%, #f5f5f5);
+  --dot: #e5e5e5;
+  --dot-border: #a3a3a3;
+  /* Hero palette, from the original's .prose / .prose-invert tokens. */
+  --prose-hero-body: #374151;
+  --prose-hero-head: #111827;
+  --code-bg: #e5e5e580;
+  --shadow: 0 1px 2px 0 #0000000d;
+  --ring: #a3a3a3;
+}
+
+html.dark {
+  --bg: #000;
+  --fg: #f5f5f5;
+  --fg-strong: #fff;
+  --muted: #a3a3a3;
+  --faint: #a3a3a3;
+  --border: #262626;
+  --border-soft: #262626;
+  --chip: #26262680;
+  --card: #000;
+  --elev: #000;
+  --hover: #0a0a0a;
+  --spot: linear-gradient(110deg, #000 45%, #171717 55%, #000);
+  --dot: #262626;
+  --dot-border: #525252;
+  /* Inverted: headings full white, body one step down. */
+  --prose-hero-body: #d1d5db;
+  --prose-hero-head: #fff;
+  --code-bg: #26262680;
+  --ring: #404040;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  border: 0 solid var(--border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizespeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    scroll-behavior: smooth;
+  }
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+img,
+video,
+iframe {
+  content-visibility: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+  background: none;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+p {
+  margin: 0;
+}
+
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1em;
+}
+
+::selection {
+  background: var(--border-soft);
+}
+
+html.dark ::selection {
+  background: #262626;
+}
+
+:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px var(--ring);
+}
+
+.motion-reduce\:transition-none {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* ---------- layout ---------- */
+
+.shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .shell {
+    padding: 1.5rem 0;
+  }
+}
+
+/* The original capped nav, main and footer at max-w-4xl and centred them.
+   Without the cap, content hugs the left edge on a wide screen. */
+.container {
+  width: 100%;
+  max-width: 56rem;
+  margin-inline: auto;
+  padding-inline: 2rem;
+}
+
+.main {
+  flex: 1;
+  contain: layout style;
+}
+
+.stack {
+  display: grid;
+  align-items: center;
+  gap: 3.5rem;
+  padding-block: 1rem;
+}
+
+.stack-sm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.row-tight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Without this the title refuses to shrink and shoves the badge out. */
+  min-width: 0;
+}
+
+.between {
+  justify-content: space-between;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.sr-only {
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  position: absolute;
+  overflow: hidden;
+}
+
+/* ---------- header ---------- */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 1rem;
+  background: #f5f5f5cc;
+  backdrop-filter: blur(12px);
+}
+
+html.dark .nav {
+  background: #000000e6;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    padding-block: 1rem;
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.brand:hover {
+  opacity: 1;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (hover: hover) {
+  .nav-links .btn-icon:hover {
+    background: var(--hover);
+  }
+  html.dark .nav-links .btn-icon:hover {
+    background: #0a0a0a;
+  }
+}
+
+.nav-links .btn-icon {
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+@media (hover: hover) {
+  .nav-links .btn-icon:hover {
+    opacity: 1;
+  }
+}
+
+/* ---------- theme toggle ---------- */
+
+/* Exactly one of the two icons shows, matching the active theme. The hover
+   background stays on the button, not the icon, so it doesn't become a blob. */
+.theme-toggle .theme-sun,
+.theme-toggle .theme-moon {
+  display: flex;
+}
+
+html:not(.dark) .theme-toggle .theme-sun,
+html.dark .theme-toggle .theme-moon {
+  display: none;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  white-space: nowrap;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+
+.btn:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.btn-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.btn-outline {
+  border-width: 1px;
+  border-color: var(--border-soft);
+  background: var(--elev);
+  box-shadow: var(--shadow);
+  color: var(--fg);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--hover);
+  color: var(--fg-strong);
+}
+
+.btn-sm {
+  height: 2rem;
+  padding-inline: 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* ---------- cards ---------- */
+
+.card {
+  width: 100%;
+  padding: 0.75rem;
+  border-width: 1px;
+  border-radius: 0.375rem;
+  background: var(--card);
+}
+
+/* The inner stack carries the rhythm (was Tailwind `space-y-3`), so the card
+   itself can push the tag row to the bottom and keep tag baselines level
+   across a row of cards with different title/description lengths. */
+.project {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s;
+}
+
+.project:hover,
+.project:focus-within {
+  border-color: var(--ring);
+}
+
+.project-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.icon-img {
+  height: 1.5rem;
+  width: 1.5rem;
+  flex-shrink: 0;
+}
+
+.title-link,
+.title-link-plain {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  text-decoration-color: var(--faint);
+  text-decoration-style: dotted;
+  text-underline-offset: 5px;
+}
+
+.title-link:hover {
+  text-decoration-line: underline;
+}
+
+.title-link .icon,
+.title-link-plain .icon {
+  opacity: 0.5;
+  transition: 0.2s;
+}
+
+.group:hover .icon {
+  opacity: 1;
+  transform: translateX(1.3px);
+}
+
+.title-plain {
+  display: block;
+  min-width: 0;
+  font-weight: 500;
+}
+
+.icon-img,
+.icon {
+  flex-shrink: 0;
+}
+
+/* Card headers keep the title on one line and let it ellipsis rather than
+   pushing the badge and GitHub link off the card. */
+.row-tight > .title-link,
+.row-tight > .title-plain {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.more {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.1s;
+}
+
+.more:hover {
+  color: var(--fg-strong);
+}
+
+html.dark .more:hover {
+  color: #fafafa;
+}
+
+.more .icon {
+  opacity: 0.7;
+  transition: 0.2s;
+}
+
+.group:hover .more .icon {
+  transform: translateX(2px);
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.desc {
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* ---------- post list rows ---------- */
+
+/* Title and description are one text block, so the gap lives on the block
+   rather than being faked with a margin on the <a>. Keeps the two lines
+   together when they wrap. */
+.post-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.post-row-title {
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  text-decoration-color: var(--faint);
+  text-decoration-style: dotted;
+  text-underline-offset: 4px;
+}
+
+.post-row:hover .post-row-title {
+  text-decoration-line: underline;
+}
+
+.post-row .desc {
+  margin-top: 0.25rem;
+}
+
+/* The underline must hug the text, so the label is an inline child rather than
+   the flex container itself. */
+.post-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: 0.15s;
+}
+
+.post-title .label {
+  text-decoration-color: var(--faint);
+  text-decoration-style: dotted;
+  text-underline-offset: 5px;
+}
+
+.post-title:hover .label {
+  text-decoration-line: underline;
+}
+
+.post-title:hover {
+  opacity: 0.8;
+}
+
+@media (min-width: 768px) {
+  .post-title {
+    font-size: 1.125rem;
+  }
+}
+
+.post-title .icon {
+  display: block;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+@media (min-width: 768px) {
+  /* Chevron only earns its space on small screens. */
+  .post-title .icon {
+    display: none;
+  }
+}
+
+/* ---------- sections ---------- */
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.section-head h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.stars .icon {
+  transition: 0.2s;
+}
+
+.group:hover .stars .icon {
+  color: #ca8a04;
+}
+
+/* ---------- about / hero ---------- */
+
+/* Hero text sits on the page background, not in a card, so it uses the prose
+   palette from the original: headings go full white in dark mode (#fff) and the
+   lead to #d1d5db, rather than the muted grey used for card copy. */
+.prose {
+  color: var(--prose-hero-body);
+  max-width: 65ch;
+}
+
+/* Headings take the prose heading colour, which in dark mode is full white.
+   Scoped under .prose so post-body prose (prose-neutral) is unaffected. */
+.prose .name,
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--prose-hero-head);
+}
+
+.prose p {
+  margin-block: 1.25em;
+}
+
+.prose a {
+  color: var(--fg-strong);
+  font-weight: 400;
+  text-decoration-color: var(--faint);
+  text-decoration-style: dotted;
+  text-underline-offset: 5px;
+}
+
+.prose a:hover {
+  opacity: 0.8;
+}
+
+.prose strong {
+  color: var(--fg-strong);
+  font-weight: 600;
+}
+
+.name {
+  margin-bottom: 0.5rem;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.lead {
+  line-height: 2;
+}
+
+/* ---------- badges & tags ---------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-width: 1px;
+  border-radius: 0.375rem;
+  background: var(--chip);
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: default;
+}
+
+html.dark .badge {
+  background: var(--chip);
+  color: var(--muted);
+}
+
+/* Hash tags carry no icon, so drop the icon gap and tighten them. */
+.tag-hash {
+  gap: 0;
+  padding-inline: 0.375rem;
+  padding-block: 0;
+  color: var(--faint);
+}
+
+.badge-spot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.5rem;
+  border-width: 1px;
+  border-radius: 9999px;
+  background: var(--spot);
+  background-size: 200% 100%;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.scroll-x {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+/* ---------- timeline ---------- */
+
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-inline-start: 2px solid var(--border);
+}
+
+/* position:relative so each dot anchors to its own <li>. Without it every dot
+   resolves against the <ol> and they all stack at the top of the timeline. */
+.entry {
+  position: relative;
+  margin-inline-start: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+/* Reach from the <li>'s left edge back to the rule: 1.25rem of inset plus the
+   2px border is 22px, and a 12px dot centred on that rule starts 27px back.
+   top lines it up with the date line, which is 12px tall with no leading. */
+.dot {
+  position: absolute;
+  inset-inline-start: -1.6875rem;
+  top: 0;
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--dot-border);
+  background: var(--dot);
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.entry > .mono {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.entry-body {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.entry-body h3 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.company {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.company .icon {
+  margin-left: 0.25rem;
+  transition: 0.15s;
+}
+
+.group:hover .company .icon {
+  transform: translateX(1.5px);
+}
+
+.company:hover {
+  color: #000;
+}
+
+html.dark .company:hover {
+  color: #fff;
+}
+
+.entry .desc {
+  margin-top: 0.75rem;
+}
+
+/* ---------- search ---------- */
+
+.search-wrap {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.search-wrap > .icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* Height comes from the line box, not padding, so the search icon's optical
+   centre and the text's are the same. */
+.search-wrap input {
+  width: 100%;
+  height: 2.5rem;
+  padding-inline: 2.5rem 1rem;
+  border-width: 1px;
+  border-radius: 0.375rem;
+  background: transparent;
+  font-size: 0.875rem;
+  line-height: 1;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+/* Native clear/X button duplicated our own affordance; hide it. */
+.search-wrap input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-wrap input::placeholder {
+  color: var(--faint);
+}
+
+.search-wrap input:focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 22%, transparent);
+}
+
+/* The count sits alone on its line; keep it tied to the list below it. */
+.list-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ---------- repos ---------- */
+
+/* Name and its arrow stay on one line. Without the nowrap the arrow wraps
+   below the repo name. */
+.repo-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-weight: 500;
+  transition: opacity 0.1s;
+}
+
+.repo-name:hover {
+  opacity: 0.8;
+}
+
+.repo-name .icon {
+  opacity: 0.7;
+  transition: 0.2s;
+}
+
+.group:hover .repo-name .icon {
+  transform: translateX(1.3px);
+  opacity: 1;
+}
+
+.repo-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ---------- pagination ---------- */
+
+.pager {
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.pager-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* ---------- post ---------- */
+
+.post-head {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.post-head h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+@media (min-width: 768px) {
+  .post-head h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+.post-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-block: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+  .post-meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 1.25rem;
+  }
+}
+
+.edit-btn {
+  background: transparent;
+  box-shadow: none;
+  gap: 0.25rem;
+  width: max-content;
+}
+
+.edit-btn .icon {
+  color: var(--muted);
+}
+
+.wip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-width: 1px;
+  border-radius: 0.375rem;
+  background: #e5e5e566;
+  font-size: 0.875rem;
+  color: #404040;
+}
+
+html.dark .wip {
+  background: #26262699;
+  color: var(--muted);
+}
+
+.wip p {
+  text-wrap: pretty;
+}
+
+.wip > .icon {
+  flex-shrink: 0;
+}
+
+/* ---------- prose (post body) ---------- */
+
+.prose-neutral {
+  --p-body: #404040;
+  --p-head: #171717;
+  --p-links: #171717;
+  --p-quotes: #171717;
+  --p-quote-borders: #e5e5e5;
+  --p-hr: #e5e5e5;
+  --p-captions: #737373;
+  --p-counters: #737373;
+  --p-bullets: #d4d4d4;
+  --p-code: #171717;
+  --p-th-borders: #d4d4d4;
+  --p-td-borders: #e5e5e5;
+}
+
+html.dark .prose-neutral {
+  --p-body: #d4d4d4;
+  --p-head: #fff;
+  --p-links: #fff;
+  --p-quotes: #f5f5f5;
+  --p-quote-borders: #404040;
+  --p-hr: #404040;
+  --p-captions: #a3a3a3;
+  --p-counters: #a3a3a3;
+  --p-bullets: #525252;
+  --p-code: #fff;
+  --p-th-borders: #525252;
+  --p-td-borders: #404040;
+}
+
+.prose-neutral {
+  max-width: 100%;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--p-body);
+  padding-bottom: 1.25rem;
+}
+
+.prose-neutral h2 {
+  color: var(--p-head);
+  margin-top: 2em;
+  margin-bottom: 1em;
+  font-size: 1.5em;
+  line-height: 1.33333;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.prose-neutral h3 {
+  color: var(--p-head);
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+  font-size: 1.25em;
+  font-weight: 500;
+}
+
+.prose-neutral h4 {
+  color: var(--p-head);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+}
+
+.prose-neutral h2 + *,
+.prose-neutral h3 + *,
+.prose-neutral h4 + * {
+  margin-top: 0;
+}
+
+.prose-neutral > :first-child {
+  margin-top: 0;
+}
+
+.prose-neutral > :last-child {
+  margin-bottom: 0;
+}
+
+.prose-neutral a {
+  color: var(--p-links);
+  font-weight: 400;
+  text-decoration-color: var(--ring);
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 6px;
+}
+
+.prose-neutral strong {
+  color: var(--p-head);
+  font-weight: 600;
+}
+
+.prose-neutral ul,
+.prose-neutral ol {
+  margin-block: 1.25em;
+  padding-inline-start: 1.625em;
+}
+
+.prose-neutral ul {
+  list-style: disc;
+}
+
+.prose-neutral ol {
+  list-style: decimal;
+  margin-bottom: 0.75rem;
+}
+
+.prose-neutral li {
+  margin-block: 0.5em;
+  padding-inline-start: 0.375em;
+}
+
+.prose-neutral li::marker {
+  color: var(--p-counters);
+}
+
+.prose-neutral li > p {
+  margin-block: 0.75em;
+}
+
+.prose-neutral ul ul,
+.prose-neutral ul ol,
+.prose-neutral ol ul,
+.prose-neutral ol ol {
+  margin-block: 0.75em;
+}
+
+.prose-neutral blockquote {
+  color: var(--p-quotes);
+  font-weight: 500;
+  margin-block: 1.6em;
+  padding-inline-start: 1em;
+  border-inline-start: 4px solid var(--p-quote-borders);
+}
+
+.prose-neutral hr {
+  border-top-width: 1px;
+  border-color: var(--p-hr);
+  margin-block: 3em;
+}
+
+.prose-neutral code {
+  color: var(--p-code);
+  font-size: 0.875em;
+  font-weight: 600;
+  padding: 2px;
+  border-width: 1px;
+  border-radius: 0.25rem;
+  background: var(--code-bg);
+}
+
+.prose-neutral pre {
+  position: relative;
+  margin-block: 0.75rem;
+  padding: 0.857143em 1.14286em;
+  border-width: 1px;
+  border-radius: 0.25rem;
+  background: var(--elev);
+  font-size: 0.875em;
+  line-height: 1.71429;
+  overflow-x: auto;
+}
+
+.prose-neutral pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+.prose-neutral table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 2em;
+  font-size: 0.875em;
+  line-height: 1.71429;
+}
+
+.prose-neutral th,
+.prose-neutral td {
+  padding: 0.571429em;
+  text-align: start;
+}
+
+.prose-neutral thead th {
+  color: var(--p-head);
+  font-weight: 600;
+  vertical-align: bottom;
+  border-bottom-width: 1px;
+  border-color: var(--p-th-borders);
+}
+
+.prose-neutral tbody tr {
+  border-bottom-width: 1px;
+  border-color: var(--p-td-borders);
+}
+
+.prose-neutral tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.prose-neutral img {
+  margin-block: 2em;
+}
+
+/* ---------- footer ---------- */
+
+.footer {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .footer {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.serif {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+}
+
+.footer-id {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .footer-id {
+    font-size: 1rem;
+  }
+}
+
+.muted,
+.dim-strong {
+  color: var(--muted);
+}
+
+.xs {
+  font-size: 0.75rem;
+}

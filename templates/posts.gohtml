@@ -1,0 +1,35 @@
+{{define "content"}}
+<main>
+  {{template "search" .}}
+  {{template "results" .}}
+</main>
+{{end}}
+
+{{define "results"}}
+<div id="results">
+  {{/* The count sits inside the swap target so it updates with the results. */}}
+  <div class="row between dim-strong mb-4">
+    <p class="mono xs">{{.Total}} posts</p>
+  </div>
+  <div class="stack-sm">
+    {{range .Posts}}
+    <div class="card">
+      <div class="post-row">
+        <div>
+          <a href="/post/{{.Slug}}" class="post-row-title">{{.Title}}</a>
+          <p class="desc">{{.Description}}</p>
+        </div>
+        <div class="row-tight wrap">
+          <span class="badge">{{iconAt "tag" 12}}<span>{{.Category}}</span></span>
+          <span class="badge">{{iconAt "cal" 12}}<time datetime="{{.Date}}">{{formatDate .Date}}</time></span>
+          {{range .Tags}}<span class="badge tag-hash">#{{.}}</span>{{end}}
+        </div>
+      </div>
+    </div>
+    {{else}}
+    <p class="desc dim-strong" role="status">No posts match your search.</p>
+    {{end}}
+  </div>
+  {{template "pager" .}}
+</div>
+{{end}}
