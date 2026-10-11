@@ -46,7 +46,7 @@ var experiences = []experience{
 type project struct {
 	Title, Description, URL, GitHubURL, Icon string
 	Tags                                     []string
-	Badge                                    string // "latest" | "updated" | ""
+	Badge                                    string // "latest" | "updated" | "contributor" | ""
 }
 
 var featuredProjects = []project{
@@ -76,10 +76,19 @@ var featuredProjects = []project{
 		GitHubURL:   "https://github.com/rishavnandi/ansible_homelab",
 	},
 	{
-		Title:       "Docker Compose Boilerplates",
-		Description: "Reusable Docker Compose templates for self-hosted services",
-		Tags:        []string{"Docker", "Git", "Linux"},
-		GitHubURL:   "https://github.com/rishavnandi/boiler_plates",
+		Title:       "ZTE F670L Unlock",
+		Description: "Tooling and guide to unlock an ISP-locked ZTE F670L GPON ONT and reach bridge mode",
+		Tags:        []string{"Python", "Linux", "Git"},
+		Badge:       "latest",
+		GitHubURL:   "https://github.com/rishavnandi/zte_f670l_unlock",
+	},
+	{
+		Title:       "OpenChamber",
+		Description: "Agentic development environment built on OpenCode; I contribute upstream",
+		Tags:        []string{"TypeScript", "Electron", "Git"},
+		Badge:       "contributor",
+		URL:         "https://openchamber.dev",
+		GitHubURL:   "https://github.com/openchamber/openchamber",
 	},
 }
 
