@@ -80,6 +80,7 @@ var featuredProjects = []project{
 		Description: "Tooling and guide to unlock an ISP-locked ZTE F670L GPON ONT and reach bridge mode",
 		Tags:        []string{"Python", "Linux", "Git"},
 		Badge:       "latest",
+		Icon:        "router",
 		GitHubURL:   "https://github.com/rishavnandi/zte_f670l_unlock",
 	},
 	{
@@ -87,6 +88,7 @@ var featuredProjects = []project{
 		Description: "Agentic development environment built on OpenCode; I contribute upstream",
 		Tags:        []string{"TypeScript", "Electron", "Git"},
 		Badge:       "contributor",
+		Icon:        "/images/openchamber_logo.svg",
 		URL:         "https://openchamber.dev",
 		GitHubURL:   "https://github.com/openchamber/openchamber",
 	},

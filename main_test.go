@@ -263,7 +263,9 @@ func TestShellHighlighting(t *testing.T) {
 	}
 }
 
-// Every project card needs an icon: its own logo, or its lead tech's.
+// Every project card needs an icon: its own logo, a built-in icon, or its lead
+// tech's. Icon carries both cases, so a typo'd icon name would silently fall
+// back to the lead tag rather than fail.
 func TestProjectIcons(t *testing.T) {
 	body := string(mustRender(t, "home.gohtml"))
 
@@ -271,17 +273,30 @@ func TestProjectIcons(t *testing.T) {
 		t.Error("Kusama should use its own logo")
 	}
 	for _, p := range featuredProjects {
-		if p.Icon != "" {
-			continue // own logo, already asserted for one of them
-		}
-		// Ansible Homelab has no logo and leads with Ansible, so it falls back.
-		name := techIcon[p.LeadTag()]
-		if name == "" {
-			t.Errorf("%s has no logo and no icon for %q", p.Title, p.LeadTag())
+		if p.Icon == "" {
+			// Ansible Homelab has no logo and leads with Ansible, so it falls back.
+			name := techIcon[p.LeadTag()]
+			if name == "" {
+				t.Errorf("%s has no logo and no icon for %q", p.Title, p.LeadTag())
+				continue
+			}
+			if !strings.Contains(body, string(iconAt(name, 24))) {
+				t.Errorf("%s should render the %q fallback icon", p.Title, name)
+			}
 			continue
 		}
-		if !strings.Contains(body, string(iconAt(name, 24))) {
-			t.Errorf("%s should render the %q fallback icon", p.Title, name)
+		if iconAt(p.Icon, 24) != "" {
+			continue // built-in icon, rendered from icons.go
+		}
+		// Otherwise it must be a real static asset. Checking the embedded FS
+		// rather than the HTML: a typo'd name also lands in an <img src>, so
+		// the markup alone would look fine and 404 at request time.
+		if !strings.HasPrefix(p.Icon, "/") {
+			t.Errorf("%s: Icon %q is not a known icon and not an asset path", p.Title, p.Icon)
+			continue
+		}
+		if _, err := staticFS.Open("static" + p.Icon); err != nil {
+			t.Errorf("%s: Icon asset %q is missing from static/", p.Title, p.Icon)
 		}
 	}
 }
