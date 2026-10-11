@@ -80,7 +80,7 @@ var featuredProjects = []project{
 		Description: "Tooling and guide to unlock an ISP-locked ZTE F670L GPON ONT and reach bridge mode",
 		Tags:        []string{"Python", "Linux", "Git"},
 		Badge:       "latest",
-		Icon:        "router",
+		Icon:        "zte",
 		GitHubURL:   "https://github.com/rishavnandi/zte_f670l_unlock",
 	},
 	{
