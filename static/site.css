@@ -338,6 +338,20 @@ html.dark .theme-toggle .theme-moon {
   display: none;
 }
 
+/* Theme switch wipes outward from the toggle: the new view is clipped to a
+   growing circle. The default cross-fade is off so the new state covers the
+   old one outright rather than blending through it. */
+::view-transition-image-pair(root) {
+  isolation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  display: block;
+}
+
 /* ---------- buttons ---------- */
 
 .btn {

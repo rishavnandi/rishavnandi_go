@@ -97,10 +97,39 @@
       apply();
     }
   });
+  // Theme switch wipes outward from the toggle. The page snapshot and the
+  // clip-path animation are handled by the compositor, so this stays off the
+  // main thread. Browsers without startViewTransition, and anyone asking for
+  // reduced motion, get the plain swap.
+  const wipe = (from) => {
+    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      apply();
+      return;
+    }
+    const box = from.getBoundingClientRect();
+    const x = box.left + box.width / 2;
+    const y = box.top + box.height / 2;
+    const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    const transition = document.startViewTransition(apply);
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        {
+          clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`],
+        },
+        { duration: 450, easing: 'ease-in-out', pseudoElement: '::view-transition-new(root)' },
+      );
+    }).catch(() => {
+      // ready rejects if the transition is skipped, e.g. the tab is hidden.
+      // apply() still ran, so the theme is correct without the animation.
+    });
+  };
+
   document.addEventListener('click', (event) => {
-    if (!(event.target instanceof Element) || !event.target.closest('[data-theme-toggle]')) return;
+    if (!(event.target instanceof Element)) return;
+    const toggle = event.target.closest('[data-theme-toggle]');
+    if (!toggle) return;
     preference = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-    apply();
+    wipe(toggle);
     try {
       localStorage.setItem(key, preference);
     } catch {
