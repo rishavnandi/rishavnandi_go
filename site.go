@@ -92,6 +92,14 @@ var featuredProjects = []project{
 		URL:         "https://openchamber.dev",
 		GitHubURL:   "https://github.com/openchamber/openchamber",
 	},
+	{
+		Title:       "winget-pkgs",
+		Description: "Community repository of Windows Package Manager manifests; I contribute manifests upstream",
+		Tags:        []string{"Windows", "Git"},
+		Badge:       "contributor",
+		Icon:        "windows",
+		GitHubURL:   "https://github.com/microsoft/winget-pkgs",
+	},
 }
 
 type repo struct {
