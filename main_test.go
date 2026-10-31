@@ -220,16 +220,32 @@ func TestSecurityAndCacheHeaders(t *testing.T) {
 // Only published posts render, newest first.
 func TestPostLoading(t *testing.T) {
 	loadPosts()
-	if len(posts) != 2 {
-		t.Fatalf("loaded %d posts, want 2", len(posts))
+	if len(posts) < 2 {
+		t.Fatalf("loaded %d posts, want at least 2", len(posts))
 	}
-	if posts[0].Slug != "homelab" {
-		t.Errorf("first post = %q, want homelab (newest first)", posts[0].Slug)
+	for i, p := range posts {
+		if !p.Published || p.Title == "" || p.Date == "" {
+			t.Errorf("post %q not loaded correctly: %+v", p.Slug, p)
+		}
+		if i > 0 && posts[i-1].Date < p.Date {
+			t.Errorf("%q (%s) sorts before %q (%s), want newest first",
+				posts[i-1].Slug, posts[i-1].Date, p.Slug, p.Date)
+		}
 	}
-	if posts[0].Category != "Tutorial" || len(posts[0].Tags) != 3 {
-		t.Errorf("frontmatter not parsed: %+v", posts[0])
+	var homelab *post
+	for i := range posts {
+		if posts[i].Slug == "homelab" {
+			homelab = &posts[i]
+			break
+		}
 	}
-	html := string(posts[0].HTML)
+	if homelab == nil {
+		t.Fatal("homelab post did not load")
+	}
+	if homelab.Category != "Tutorial" || len(homelab.Tags) != 3 {
+		t.Errorf("frontmatter not parsed: %+v", *homelab)
+	}
+	html := string(homelab.HTML)
 	if !strings.Contains(html, "<pre") {
 		t.Error("markdown code blocks should render")
 	}
